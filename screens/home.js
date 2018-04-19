@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { StackNavigator } from 'react-navigation';
+import {ScanScreen}  from './scan';
 
 export class HomeScreen extends React.Component {
   constructor() {
@@ -10,20 +11,23 @@ export class HomeScreen extends React.Component {
 
   add = () => {
     console.log("add")
+    this.props.navigaton.navigate('scan');
   };
 
   clear = () => {
     console.log("clear")
   };
 
-    static navigationOptions = {
-    title: 'Authentificator',
-  };
+  static navigationOptions = {
+  title: 'Authentificator',
+};
 
   render() {
     return (
       <View style={styles.container}>
-        <TouchableOpacity style={styles.buttonAdd} onPress={this.add}>
+        <TouchableOpacity style={styles.buttonAdd} onPress={() =>  this.props.navigation.navigate('scan', {
+                  add: this._add
+                })}>
           <Text> ADD </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.buttonClear} onPress={this.clear}>
