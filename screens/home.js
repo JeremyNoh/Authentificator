@@ -1,7 +1,9 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView , AsyncStorage} from 'react-native';
 import { StackNavigator } from "react-navigation";
 import { ScanScreen } from "./scan";
+import  _  from "lodash" ;
+
 
 export class HomeScreen extends React.Component {
   constructor() {
@@ -11,19 +13,45 @@ export class HomeScreen extends React.Component {
     };
   }
 
-  // add = () => {
-  //   console.log("add")
-  //   this.props.navigaton.navigate('scan');
-  // };
+  async componentWillMount(){
+    try {
+      const result = await AsyncStorage.getItem('listing')
+      if (result) {
+        list  = JSON.parse(result) ;
+        this.setState({listing:JSON.parse(result)});
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+
+  async pushItem(list){
+    try {
+        await AsyncStorage.setItem('listing',list);
+      } catch (error) {
+    }
+  }
 
   _add = obj => {
-    this.setState({listing:[...this.state.listing, obj]});
+    if(_.some(this.state.listing, obj )){
+      alert(`Sorry the entry ${obj.label} already exist`)
 
-    // console.log(listing)
+    } else {
+      this.setState({listing:[...this.state.listing, obj]}, () => {
+        list = JSON.stringify(this.state.listing)
+        console.log(list);
+        this.pushItem(list)
+
+      });
+
+
+    }
 
   };
 
   clear = () => {
+    this.setState({listing:[]});
     console.log("clear");
   };
 
