@@ -7,9 +7,6 @@ export class ScanScreen extends React.Component {
 
     state = {
         hasCameraPermission: null,
-        label : "",
-        secret : "",
-        issuer :""
     };
 
     componentDidMount() {
@@ -25,24 +22,26 @@ export class ScanScreen extends React.Component {
 
     _handleBarCodeRead = ({data}) => {
       const {state, goBack } = this.props.navigation
-        Alert.alert(
-            'Scan successful!',
-            JSON.stringify(data)
-
-          //  regex = /^otpauth:\/\/totp\/(.+)\?secret=(.+)&issuer=(.*)/;
-
-        );
-        console.log(data)
+        // Alert.alert(
+        //     'Scan successful!',
+        //     JSON.stringify(data)
+        // );
+        // console.log(data)
 
         let findElement =  data.match(/^otpauth:\/\/totp\/(.+)\?secret=(.+)&issuer=(.*)/);
         label = findElement[1]
         secret =  findElement[2]
         issuer =  findElement[3]
-        this.setState({
+
+        const obj =  {
           label,
-          secret ,
+          secret,
           issuer
-        });
+        }
+
+        state.params.add(obj)
+        this.props.navigation.goBack() ;
+
 
 
     };
@@ -59,7 +58,7 @@ export class ScanScreen extends React.Component {
                             style={{height: 200, width: 200}}
                         />
                 }
-                <Text> {this.state.secret} </Text>
+                <Text> {this.state.secret}  {this.state.label}  {this.state.issuer} </Text>
             </View>
         );
     }
