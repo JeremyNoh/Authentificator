@@ -1,9 +1,11 @@
 import React from 'react';
 import {StyleSheet, Text, View, Alert, head, Button} from 'react-native';
 import {Constants, BarCodeScanner, Permissions} from 'expo';
+import { connect } from 'react-redux';
+import  _  from "lodash" ;
 
 
-export class ScanScreen extends React.Component {
+class ScanScreen extends React.Component {
 
     state = {
         hasCameraPermission: null,
@@ -21,12 +23,16 @@ export class ScanScreen extends React.Component {
     };
 
     _handleBarCodeRead = ({data}) => {
-      const {state, goBack } = this.props.navigation
+
+      // const {state, goBack } = this.props.navigation
         // Alert.alert(
         //     'Scan successful!',
         //     JSON.stringify(data)
         // );
         // console.log(data)
+
+
+
 
         let findElement =  data.match(/^otpauth:\/\/totp\/(.+)\?secret=(.+)&issuer=(.*)/);
         label = findElement[1]
@@ -39,7 +45,21 @@ export class ScanScreen extends React.Component {
           issuer
         }
 
-        state.params.add(obj)
+        if(_.some(this.props.listing, obj )){
+            alert(`Sorry the entry ${obj.label} already exist`)
+
+          } else {
+            this.props.dispatch({type : 'ADD' , data : obj})
+
+            // this.setState({listing:[...this.state.listing, obj]}, () => {
+            //   list = JSON.stringify(this.state.listing)
+            //   console.log(list);
+            //   this.pushItem(list)
+            //
+            // });
+          }
+
+
         this.props.navigation.goBack() ;
 
 
@@ -58,7 +78,7 @@ export class ScanScreen extends React.Component {
                             style={{height: 200, width: 200}}
                         />
                 }
-                <Text> {this.state.secret}  {this.state.label}  {this.state.issuer} </Text>
+                <Text> {this.props.secret}  {this.props.label}  {this.props.issuer} </Text>
             </View>
         );
     }
@@ -79,5 +99,13 @@ const styles = StyleSheet.create({
         marginBottom: 30,
         marginTop: 50
     },
-
 });
+
+
+function mapStateToProps(state) {
+  return {
+    listing: state.listing
+  }
+}
+
+export default connect(mapStateToProps)(ScanScreen)

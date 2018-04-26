@@ -1,17 +1,13 @@
 import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView , AsyncStorage} from 'react-native';
 import { StackNavigator } from "react-navigation";
-import { ScanScreen } from "./scan";
+import ScanScreen from "./scan";
 import  _  from "lodash" ;
+import { connect } from 'react-redux'
 
 
-export class HomeScreen extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      listing: []
-    };
-  }
+
+ class HomeScreen extends React.Component {
 
   async componentWillMount(){
     try {
@@ -31,24 +27,25 @@ export class HomeScreen extends React.Component {
         await AsyncStorage.setItem('listing',list);
       } catch (error) {
     }
+
+
   }
-
-  _add = obj => {
-    if(_.some(this.state.listing, obj )){
-      alert(`Sorry the entry ${obj.label} already exist`)
-
-    } else {
-      this.setState({listing:[...this.state.listing, obj]}, () => {
-        list = JSON.stringify(this.state.listing)
-        console.log(list);
-        this.pushItem(list)
-
-      });
-
-
-    }
-
-  };
+  //
+  // _add = obj => {
+  //   if(_.some(this.state.listing, obj )){
+  //     alert(`Sorry the entry ${obj.label} already exist`)
+  //
+  //   } else {
+  //
+  //     this.setState({listing:[...this.state.listing, obj]}, () => {
+  //       list = JSON.stringify(this.state.listing)
+  //       console.log(list);
+  //       this.pushItem(list)
+  //
+  //     });
+  //   }
+  //
+  // };
 
   async removeItem(){
     try {
@@ -59,9 +56,8 @@ export class HomeScreen extends React.Component {
 
 
   clear = () => {
-    this.setState({listing:[]});
+    this.props.dispatch({ type: 'CLEAR' })
     this.removeItem()
-    console.log("clear");
   };
 
   static navigationOptions = {
@@ -70,14 +66,14 @@ export class HomeScreen extends React.Component {
 
   render()
    {
-       const list = this.state.listing.map((item , id ) => {
+       const list = this.props.listing.map((item , id ) => {
            console.log(item);
            return (
-               <View  key = {id}>
+               <TouchableOpacity  key = {id}>
                    <Text style={styles.ListText}>
                        {item.secret} {item.label} {item.issuer}
                    </Text>
-               </View>
+               </TouchableOpacity>
            )
        })
 
@@ -86,9 +82,7 @@ export class HomeScreen extends React.Component {
                <TouchableOpacity
                    style={styles.buttonAdd}
                    onPress={() =>
-                       this.props.navigation.navigate("scan", {
-                           add: this._add
-                       })
+                       this.props.navigation.navigate("scan")
                    }
                >
                    <Text> ADD </Text>
@@ -131,3 +125,13 @@ const styles = StyleSheet.create({
     padding: 10
 }
 });
+
+
+
+function mapStateToProps(state) {
+  return {
+    listing: state.listing
+  }
+}
+
+export default connect(mapStateToProps)(HomeScreen)
