@@ -50,8 +50,17 @@ export class HomeScreen extends React.Component {
 
   };
 
+  async removeItem(){
+    try {
+        await AsyncStorage.removeItem('listing');
+      } catch (error) {
+    }
+  }
+
+
   clear = () => {
     this.setState({listing:[]});
+    this.removeItem()
     console.log("clear");
   };
 
