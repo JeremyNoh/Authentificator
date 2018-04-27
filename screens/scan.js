@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, View, Alert, head, Button} from 'react-native';
+import {StyleSheet, Text, View, Alert, head, Button, AsyncStorage} from 'react-native';
 import {Constants, BarCodeScanner, Permissions} from 'expo';
 import { connect } from 'react-redux';
 import  _  from "lodash" ;
@@ -22,46 +22,53 @@ class ScanScreen extends React.Component {
         });
     };
 
-    _handleBarCodeRead = ({data}) => {
-
-      // const {state, goBack } = this.props.navigation
-        // Alert.alert(
-        //     'Scan successful!',
-        //     JSON.stringify(data)
-        // );
-        // console.log(data)
-
-
+    _handleBarCodeRead = ({ data}) => {
 
 
         let findElement =  data.match(/^otpauth:\/\/totp\/(.+)\?secret=(.+)&issuer=(.*)/);
-        label = findElement[1]
-        secret =  findElement[2]
-        issuer =  findElement[3]
 
-        const obj =  {
-          label,
-          secret,
-          issuer
-        }
+        if (findElement) {
+          label = findElement[1]
+          secret =  findElement[2]
+          issuer =  findElement[3]
 
-        if(_.some(this.props.listing, obj )){
-            alert(`Sorry the entry ${obj.label} already exist`)
-
-          } else {
-            this.props.dispatch({type : 'ADD' , data : obj})
-
-            // this.setState({listing:[...this.state.listing, obj]}, () => {
-            //   list = JSON.stringify(this.state.listing)
-            //   console.log(list);
-            //   this.pushItem(list)
-            //
-            // });
+          const obj =  {
+            label,
+            secret,
+            issuer
           }
 
+          if(_.some(this.props.listing, obj )){
+              alert(`Sorry the entry ${obj.label} already exist`)
 
-        this.props.navigation.goBack() ;
+            } else {
 
+              const updateList = [...this.props.listing, obj] ;
+
+              try{
+                const str = JSON.stringify(updateList)
+                AsyncStorage.setItem('listing' , str).then(() => {
+                  this.props.dispatch({
+                    type : 'ADD' ,
+                    payload : {list : updateList}
+                  })
+                })
+              }
+              catch (e) {
+                console.log(e);
+              }
+            }
+
+
+          this.props.navigation.goBack() ;
+
+
+        }
+        else {
+          alert("Veuillez selectionné le bon QR Code ;)")
+          this.props.navigation.goBack() ;
+
+        }
 
 
     };

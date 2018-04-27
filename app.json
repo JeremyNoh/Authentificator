@@ -1,5 +1,13 @@
 {
   "expo": {
-    "sdkVersion": "26.0.0"
+    "sdkVersion": "26.0.0",
+    "name": "Authentificator",
+    "slug": "Authentificator",
+    
+    "splash": {
+     "image": "./asset/splash.png",
+     "resizeMode": "contain",
+     "backgroundColor": "#ffffff"
+   },
   }
 }

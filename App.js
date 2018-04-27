@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Platform } from "react-native";
 import { StackNavigator } from 'react-navigation';
 
 import HomeScreen  from './screens/home';
@@ -19,14 +19,22 @@ const initial_state = {
 function reducer(prev_state = initial_state, action) {
   switch (action.type) {
 
+    case 'QRCODE_INIT' :
+      return Object.assign({}, prev_state , {
+          listing: action.payload.list
+        })
+
     case 'CLEAR' :
       return Object.assign({}, prev_state , {
           listing: []
         })
     case 'ADD' :
       return Object.assign({}, prev_state , {
-          listing:[...prev_state.listing, action.data]
-
+          listing:action.payload.list
+      })
+    case 'ClearOne' :
+      return Object.assign({}, prev_state , {
+          listing:action.payload.list
       })
 
 
