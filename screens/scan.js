@@ -24,7 +24,7 @@ class ScanScreen extends React.Component {
 
     _handleBarCodeRead = ({ data}) => {
 
-
+console.log(data);
         let findElement =  data.match(/^otpauth:\/\/totp\/(.+)\?secret=(.+)&issuer=(.*)/);
 
         if (findElement) {

@@ -4,12 +4,22 @@ import { StackNavigator } from "react-navigation";
 import ScanScreen from "./scan";
 import  _  from "lodash" ;
 import { connect } from 'react-redux'
+import TOTP from "../lib/totp.js";
 
 
 
  class HomeScreen extends React.Component {
 
+state = {
+  timer: null
+}
 
+   componentDidUpdate(){
+     const duration = 4000
+     setInterval(() => {
+       this.setState({timer : this.state.timer + duration})
+     }, duration)
+   }
 
   async componentWillMount(){
     console.log("componentWillMount")
@@ -96,11 +106,13 @@ import { connect } from 'react-redux'
   render()
    {
        const list = this.props.listing.map((item , id ) => {
+
+         const token = new TOTP(item.secret , 4).generate()
            console.log(item);
            return (
                <TouchableOpacity  key = {id} onPress={() => this.suppOne(id)}>
                    <Text style={styles.ListText}>
-                       {item.secret} {item.label} {item.issuer}
+                       {item.secret} {token} {item.label} {item.issuer}
                    </Text>
                </TouchableOpacity>
            )
